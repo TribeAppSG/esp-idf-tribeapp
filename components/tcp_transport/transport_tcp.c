@@ -222,6 +222,20 @@ void esp_transport_tcp_set_keep_alive(esp_transport_handle_t t, esp_transport_ke
     esp_transport_set_keep_alive(t, keep_alive_cfg);
 }
 
+static int tcp_get_errno(esp_transport_handle_t t)
+{
+    transport_tcp_t *tcp = esp_transport_get_context_data(t);
+    if (tcp->sock < 2) {
+        ESP_LOGE(TAG, "tcp connect failed");
+        return -1;
+    }
+    int sock_errno = 0;
+    uint32_t optlen = sizeof(sock_errno);
+    getsockopt(tcp->sock, SOL_SOCKET, SO_ERROR, &sock_errno, &optlen);
+    ESP_LOGD(TAG, "[socket = %d] errno is %d\n", tcp->sock, sock_errno);
+    return sock_errno;
+}
+
 esp_transport_handle_t esp_transport_tcp_init(void)
 {
     esp_transport_handle_t t = esp_transport_init();
@@ -233,6 +247,6 @@ esp_transport_handle_t esp_transport_tcp_init(void)
     tcp->sock = -1;
     esp_transport_set_func(t, tcp_connect, tcp_read, tcp_write, tcp_close, tcp_poll_read, tcp_poll_write, tcp_destroy);
     esp_transport_set_context_data(t, tcp);
-
+    esp_transport_set_get_errno_func(t, tcp_get_errno);
     return t;
 }

@@ -1273,6 +1273,14 @@ esp_err_t esp_http_client_close(esp_http_client_handle_t client)
     return ESP_OK;
 }
 
+int esp_http_client_get_errno(esp_http_client_handle_t client)
+{
+    if (client && client->transport) {
+        return esp_transport_get_errno(client->transport);
+    }
+    return ESP_FAIL;
+}
+
 esp_err_t esp_http_client_set_post_field(esp_http_client_handle_t client, const char *data, int len)
 {
     esp_err_t err = ESP_OK;

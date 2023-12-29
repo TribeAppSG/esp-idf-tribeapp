@@ -351,6 +351,17 @@ typedef enum
 
 #endif
 
+#if( configSUPPORT_DYNAMIC_ALLOCATION == 1 )
+
+	BaseType_t xTaskCreateRestrictedPinnedToCore( const TaskParameters_t * const pxTaskDefinition,
+                                                  TaskHandle_t *pxCreatedTask,
+                                                  const BaseType_t xCoreID);
+
+
+#endif
+
+
+
 /**
  * Create a new task and add it to the list of tasks that are ready to run.
  *
